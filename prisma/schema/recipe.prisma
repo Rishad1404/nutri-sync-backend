@@ -1,0 +1,52 @@
+model Recipe {
+    id          String  @id @default(cuid())
+    title       String
+    description String  @db.Text
+    cookTime    Int
+    prepTime    Int
+    servings    Int
+    difficulty  String
+    cuisine     String
+    category    String
+    imageUrl    String?
+
+    ingredients Json
+    steps       Json
+    nutrition   Json?
+
+    isPublished Boolean @default(false)
+
+    createdById String
+    createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+    rating      Float @default(0)
+    reviewCount Int   @default(0)
+    viewCount   Int   @default(0)
+
+    favorites       Favorite[]
+    mealPlanRecipes MealPlanRecipe[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([createdById])
+    @@index([cuisine])
+    @@index([category])
+    @@index([isPublished])
+}
+
+model Ingredient {
+    id              String @id @default(cuid())
+    name            String @unique
+    caloriesPerUnit Float
+    protein         Float
+    carbs           Float
+    fat             Float
+    fiber           Float
+    unit            String @default("grams")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([name])
+}

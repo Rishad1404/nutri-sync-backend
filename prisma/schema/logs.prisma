@@ -1,0 +1,34 @@
+model UserNutritionLog {
+    id     String @id @default(cuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    date          DateTime
+    totalCalories Float
+    totalProtein  Float
+    totalCarbs    Float
+    totalFat      Float
+    totalFiber    Float?
+
+    meals Json?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, date])
+    @@index([userId])
+    @@index([date])
+}
+
+model AdminLog {
+    id       String  @id @default(cuid())
+    adminId  String
+    action   String
+    targetId String?
+    details  Json?
+
+    createdAt DateTime @default(now())
+
+    @@index([adminId])
+    @@index([action])
+}
