@@ -6,11 +6,13 @@ import { mealPlanRoutes } from "../modules/meal-plan/meal-plan.route";
 import { chatRoutes } from "../modules/chat/chat.route";
 import { aiRoutes } from "../modules/ai/ai.route";
 import { adminRoutes } from "../modules/admin/admin.route";
+import { userRoutes } from "../modules/user/user.route";
 
 const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/admin", adminRoutes);
+router.use("/users", userRoutes);
 router.use("/media", mediaRoutes);
 router.use("/recipes", recipeRoutes);
 router.use("/meal-plans", mealPlanRoutes);

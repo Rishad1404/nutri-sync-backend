@@ -52,9 +52,32 @@ const changeUserRole = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const removeUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.deleteUser(id as string);
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "User deleted successfully",
+    data: result,
+  });
+});
+
+const getSystemAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.getAdminAnalytics();
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "Admin analytics retrieved",
+    data: result,
+  });
+});
+
 export const adminController = {
   getUsers,
   getStats,
   changeUserStatus,
   changeUserRole,
+  removeUser,
+  getSystemAnalytics,
 };

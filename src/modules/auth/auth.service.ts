@@ -205,33 +205,18 @@ const resendOTP = async (email: string) => {
   }
 };
 
-const getMe = async (userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      role: true,
-      status: true,
-      dietaryPreferences: true,
-      allergies: true,
-      goals: true,
-      calorieTarget: true,
-      _count: {
-        select: {
-          recipes: true,
-          mealPlans: true,
-          favorites: true,
-          nutritionLog: true,
-        },
-      },
+const getMe = async (user: IRequestUser) => {
+  const isUserExists = await prisma.user.findUnique({
+    where: {
+      id: user.id,
     },
   });
 
-  if (!user) throw new AppError(status.NOT_FOUND, "User not found");
-  return user;
+  if (!isUserExists) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+
+  return isUserExists;
 };
 
 const updateProfile = async (
