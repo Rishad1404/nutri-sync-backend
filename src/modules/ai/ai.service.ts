@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "../../config";
+import { prisma } from "../../database/prisma";
 
 const genAI = new GoogleGenerativeAI(config.geminiApiKey as string);
 
@@ -12,14 +13,31 @@ const jsonModel = genAI.getGenerativeModel({
   },
 });
 
-/**
- * FEATURE 2: AI Content Generator
- * Generates a fully structured recipe based on user input.
- */
-const generateRecipeContent = async (prompt: string) => {
+const generateRecipeContent = async (prompt: string, userId: string) => {
+  // 1. Fetch user health data from the DB
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      dietaryPreferences: true,
+      allergies: true,
+      goals: true,
+    },
+  });
+
+  // 2. Inject health constraints into the System Prompt
   const systemPrompt = `
-    You are a master chef. The user will give you a prompt.
-    Generate a recipe matching their request.
+    You are a master chef and nutritionist. 
+    User Constraints:
+    - Dietary Preferences: ${user?.dietaryPreferences?.join(", ") || "None"}
+    - Allergies: ${user?.allergies?.join(", ") || "None"}
+    - Current Goal: ${user?.goals || "General Health"}
+
+    Generate a recipe matching the user prompt: "${prompt}".
+    
+    CRITICAL SAFETY RULES:
+    1. If the user has allergies, you MUST NOT include those ingredients.
+    2. Respect the dietary preferences (e.g., if Vegan, do not use meat/dairy).
+    
     You MUST return ONLY a JSON object with this exact structure:
     {
       "title": "String",
@@ -32,7 +50,6 @@ const generateRecipeContent = async (prompt: string) => {
       "ingredients": [{ "name": "String", "quantity": Number, "unit": "String" }],
       "steps": [{ "stepNumber": Number, "instruction": "String" }]
     }
-    User Prompt: ${prompt}
   `;
 
   const result = await jsonModel.generateContent(systemPrompt);

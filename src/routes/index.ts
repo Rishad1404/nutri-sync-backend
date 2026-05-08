@@ -5,10 +5,12 @@ import { mediaRoutes } from "../modules/media/media.route";
 import { mealPlanRoutes } from "../modules/meal-plan/meal-plan.route";
 import { chatRoutes } from "../modules/chat/chat.route";
 import { aiRoutes } from "../modules/ai/ai.route";
+import { adminRoutes } from "../modules/admin/admin.route";
 
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/admin", adminRoutes);
 router.use("/media", mediaRoutes);
 router.use("/recipes", recipeRoutes);
 router.use("/meal-plans", mealPlanRoutes);

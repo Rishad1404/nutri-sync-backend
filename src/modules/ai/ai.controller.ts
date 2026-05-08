@@ -5,8 +5,8 @@ import { sendResponse } from "../../shared/utils/send-response";
 import { aiService } from "./ai.service";
 
 const generateRecipe = catchAsync(async (req: Request, res: Response) => {
-  const { prompt } = req.body;
-  const result = await aiService.generateRecipeContent(prompt);
+  const { prompt, user } = req.body;
+  const result = await aiService.generateRecipeContent(prompt, user.id);
 
   sendResponse(res, {
     status: status.OK,

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UserStatus } from "@prisma/client";
 import status from "http-status";
 import { prisma } from "../../database/prisma";
 import { AppError } from "../../shared/errors/app-error";
@@ -12,13 +13,32 @@ import type {
 import cache from "../../shared/utils/cache";
 
 /**
+ * Helper to check if a user is blocked
+ */
+const validateUserStatus = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { status: true },
+  });
+
+  if (!user || user.status === UserStatus.BLOCKED) {
+    throw new AppError(
+      status.FORBIDDEN,
+      "Your account is blocked. You can only view recipes.",
+    );
+  }
+};
+
+/**
  * @description Create a new recipe
  */
 const createRecipe = async (user: IRequestUser, payload: CreateRecipeInput) => {
+  // 1. Check if user is blocked before allowing post
+  await validateUserStatus(user.id);
+
   const recipe = await prisma.recipe.create({
     data: {
       ...payload,
-      // Prisma handles converting JS arrays/objects to JSON for these fields
       ingredients: payload.ingredients as any,
       steps: payload.steps as any,
       nutrition: payload.nutrition as any,
@@ -26,19 +46,21 @@ const createRecipe = async (user: IRequestUser, payload: CreateRecipeInput) => {
     },
   });
 
+  // Clear cache for list views
+  const keys = cache.keys();
+  const recipeKeys = keys.filter((key) => key.startsWith("recipes:"));
+  cache.del(recipeKeys);
+
   return recipe;
 };
 
 /**
- * @description Get all recipes with search, filter, sort, and pagination
+ * @description Get all recipes (Viewing is allowed for blocked users)
  */
 const getAllRecipes = async (query: RecipeFilters) => {
   const cacheKey = `recipes:${JSON.stringify(query)}`;
-
   const cachedData = cache.get(cacheKey);
-  if (cachedData) {
-    return cachedData;
-  }
+  if (cachedData) return cachedData;
 
   const builder = new PrismaQueryBuilder(query)
     .search(["title", "description", "cuisine"])
@@ -61,21 +83,16 @@ const getAllRecipes = async (query: RecipeFilters) => {
   const totalPages = Math.ceil(total / limit);
 
   const result = {
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages,
-    },
+    meta: { total, page, limit, totalPages },
     data: recipes,
   };
 
   cache.set(cacheKey, result);
-
   return result;
 };
+
 /**
- * @description Get a single recipe by ID
+ * @description Get a single recipe (Viewing is allowed for blocked users)
  */
 const getRecipeById = async (id: string) => {
   const recipe = await prisma.recipe.findUnique({
@@ -90,11 +107,8 @@ const getRecipeById = async (id: string) => {
     },
   });
 
-  if (!recipe) {
-    throw new AppError(status.NOT_FOUND, "Recipe not found");
-  }
+  if (!recipe) throw new AppError(status.NOT_FOUND, "Recipe not found");
 
-  // Increment view count in the background (no await needed for fast response)
   prisma.recipe
     .update({
       where: { id },
@@ -106,20 +120,18 @@ const getRecipeById = async (id: string) => {
 };
 
 /**
- * @description Update a recipe (Creator or Admin only)
+ * @description Update a recipe (Creator or Admin only + Blocked check)
  */
 const updateRecipe = async (
   id: string,
   user: IRequestUser,
   payload: UpdateRecipeInput,
 ) => {
-  const existingRecipe = await prisma.recipe.findUnique({
-    where: { id },
-  });
+  // 1. Check if user is blocked
+  await validateUserStatus(user.id);
 
-  if (!existingRecipe) {
-    throw new AppError(status.NOT_FOUND, "Recipe not found");
-  }
+  const existingRecipe = await prisma.recipe.findUnique({ where: { id } });
+  if (!existingRecipe) throw new AppError(status.NOT_FOUND, "Recipe not found");
 
   // Authorization Check
   if (existingRecipe.createdById !== user.id && user.role !== "ADMIN") {
@@ -145,18 +157,15 @@ const updateRecipe = async (
 };
 
 /**
- * @description Delete a recipe (Creator or Admin only)
+ * @description Delete a recipe (Creator or Admin only + Blocked check)
  */
 const deleteRecipe = async (id: string, user: IRequestUser) => {
-  const existingRecipe = await prisma.recipe.findUnique({
-    where: { id },
-  });
+  // 1. Check if user is blocked
+  await validateUserStatus(user.id);
 
-  if (!existingRecipe) {
-    throw new AppError(status.NOT_FOUND, "Recipe not found");
-  }
+  const existingRecipe = await prisma.recipe.findUnique({ where: { id } });
+  if (!existingRecipe) throw new AppError(status.NOT_FOUND, "Recipe not found");
 
-  // Authorization Check
   if (existingRecipe.createdById !== user.id && user.role !== "ADMIN") {
     throw new AppError(
       status.FORBIDDEN,
@@ -164,20 +173,15 @@ const deleteRecipe = async (id: string, user: IRequestUser) => {
     );
   }
 
-  // Transaction: If an Admin deletes someone else's recipe, log it!
   await prisma.$transaction(async (tx) => {
     await tx.recipe.delete({ where: { id } });
-
     if (user.role === "ADMIN" && existingRecipe.createdById !== user.id) {
       await tx.adminLog.create({
         data: {
           adminId: user.id,
           action: "DELETE_RECIPE",
           targetId: id,
-          details: {
-            reason: "Moderation removal",
-            recipeTitle: existingRecipe.title,
-          },
+          details: { recipeTitle: existingRecipe.title },
         },
       });
     }
