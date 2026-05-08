@@ -38,6 +38,7 @@ interface EnvConfig {
   };
   ADMIN_EMAIL: string;
   ADMIN_PASSWORD: string;
+  GEMINI_API_KEY: string;
 }
 
 const loadEnvVars = (): EnvConfig => {
@@ -70,6 +71,7 @@ const loadEnvVars = (): EnvConfig => {
     "CLOUDINARY_UPLOAD_PRESET",
     "ADMIN_EMAIL",
     "ADMIN_PASSWORD",
+    "GEMINI_API_KEY",
   ];
 
   requiredEnvVars.forEach((varName) => {
@@ -116,6 +118,7 @@ const loadEnvVars = (): EnvConfig => {
     },
     ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
   };
 };
 
