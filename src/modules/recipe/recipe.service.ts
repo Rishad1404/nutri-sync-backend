@@ -9,6 +9,7 @@ import type {
   RecipeFilters,
   UpdateRecipeInput,
 } from "./recipe.type";
+import cache from "../../shared/utils/cache";
 
 /**
  * @description Create a new recipe
@@ -32,6 +33,13 @@ const createRecipe = async (user: IRequestUser, payload: CreateRecipeInput) => {
  * @description Get all recipes with search, filter, sort, and pagination
  */
 const getAllRecipes = async (query: RecipeFilters) => {
+  const cacheKey = `recipes:${JSON.stringify(query)}`;
+
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   const builder = new PrismaQueryBuilder(query)
     .search(["title", "description", "cuisine"])
     .filter(["search", "page", "limit", "sortBy", "sortOrder"])
@@ -43,18 +51,16 @@ const getAllRecipes = async (query: RecipeFilters) => {
       },
     });
 
-  // 2. Fetch data and total count concurrently for performance
   const [recipes, total] = await Promise.all([
     prisma.recipe.findMany(builder.build()),
     prisma.recipe.count(builder.buildCount()),
   ]);
 
-  // 3. Calculate pagination metadata
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
   const totalPages = Math.ceil(total / limit);
 
-  return {
+  const result = {
     meta: {
       total,
       page,
@@ -63,8 +69,11 @@ const getAllRecipes = async (query: RecipeFilters) => {
     },
     data: recipes,
   };
-};
 
+  cache.set(cacheKey, result);
+
+  return result;
+};
 /**
  * @description Get a single recipe by ID
  */

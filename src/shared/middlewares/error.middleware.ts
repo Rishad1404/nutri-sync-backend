@@ -3,6 +3,7 @@ import status from "http-status";
 import { envVars } from "../../config/env";
 import ApiError from "../errors/api-error";
 import { AppError } from "../errors/app-error";
+import { winstonLogger } from "../utils/logger";
 
 type ErrorSource = {
   path: string;
@@ -23,7 +24,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
 const toErrorSource = (value: unknown): ErrorSource | null => {
   if (!isRecord(value)) return null;
 
-  const message = typeof value.message === "string" ? value.message : "Unknown error";
+  const message =
+    typeof value.message === "string" ? value.message : "Unknown error";
   const path =
     typeof value.path === "string"
       ? value.path
@@ -86,6 +88,13 @@ const isZodLikeError = (
 const errorHandler: ErrorRequestHandler = (err, _req, res) => {
   const isDevelopment = envVars.NODE_ENV === "development";
 
+  winstonLogger.error(err.message || "Internal Server Error", {
+    label: "GLOBAL_ERROR",
+    stack: err.stack,
+    path: _req.path,
+    method: _req.method,
+  });
+
   if (isDevelopment) {
     console.error("Global Error Handler:", err);
   }
@@ -144,7 +153,8 @@ const errorHandler: ErrorRequestHandler = (err, _req, res) => {
       });
     }
 
-    errorSources = sources.length > 0 ? sources : [{ path: "", message: String(message) }];
+    errorSources =
+      sources.length > 0 ? sources : [{ path: "", message: String(message) }];
   }
 
   const errorResponse: ErrorResponse = {
