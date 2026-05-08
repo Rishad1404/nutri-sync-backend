@@ -37,11 +37,9 @@ if (process.env.NODE_ENV === "production") {
 // Home page route
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
-    title: "Welcome to your Express app",
-    description:
-      "Built with StackKit - A production-ready Express template with TypeScript, security, and best practices.",
+    title: "Welcome to NutriSync backend",
+    description: "NutriSync API",
     version: "1.0.0",
-    docs: "https://github.com/tariqul420/stackkit",
   });
 });
 

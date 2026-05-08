@@ -29,10 +29,11 @@ model Recipe {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([createdById])
-    @@index([cuisine])
-    @@index([category])
-    @@index([isPublished])
+    @@index([createdById], name: "idx_recipe_createdById")
+    @@index([cuisine], name: "idx_recipe_cuisine")
+    @@index([category], name: "idx_recipe_category")
+    @@index([isPublished], name: "idx_recipe_isPublished")
+    @@map("recipes")
 }
 
 model Ingredient {
@@ -48,5 +49,6 @@ model Ingredient {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([name])
+    @@index([name], name: "idx_ingredient_name")
+    @@map("ingredients")
 }

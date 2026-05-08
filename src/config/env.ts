@@ -30,13 +30,14 @@ interface EnvConfig {
     SMTP_PORT: string;
     SMTP_FROM: string;
   };
-    CLOUDINARY: {
+  CLOUDINARY: {
     CLOUDINARY_CLOUD_NAME: string;
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_API_SECRET: string;
     CLOUDINARY_UPLOAD_PRESET: string;
   };
-  
+  ADMIN_EMAIL: string;
+  ADMIN_PASSWORD: string;
 }
 
 const loadEnvVars = (): EnvConfig => {
@@ -63,11 +64,12 @@ const loadEnvVars = (): EnvConfig => {
     "EMAIL_SENDER_SMTP_HOST",
     "EMAIL_SENDER_SMTP_PORT",
     "EMAIL_SENDER_SMTP_FROM",
-        "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_CLOUD_NAME",
     "CLOUDINARY_API_KEY",
     "CLOUDINARY_API_SECRET",
     "CLOUDINARY_UPLOAD_PRESET",
-    
+    "ADMIN_EMAIL",
+    "ADMIN_PASSWORD",
   ];
 
   requiredEnvVars.forEach((varName) => {
@@ -106,13 +108,14 @@ const loadEnvVars = (): EnvConfig => {
       SMTP_PORT: process.env.EMAIL_SENDER_SMTP_PORT as string,
       SMTP_FROM: process.env.EMAIL_SENDER_SMTP_FROM as string,
     },
-        CLOUDINARY: {
+    CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
       CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
       CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
       CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_UPLOAD_PRESET as string,
     },
-    
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
   };
 };
 

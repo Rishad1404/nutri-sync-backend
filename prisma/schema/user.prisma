@@ -52,8 +52,9 @@ model Favorite {
     createdAt DateTime @default(now())
 
     @@unique([userId, recipeId])
-    @@index([userId])
-    @@index([recipeId])
+    @@index([userId], name: "idx_favorite_userId")
+    @@index([recipeId], name: "idx_favorite_recipeId")
+    @@map("favorites")
 }
 
 model ChatHistory {
@@ -63,10 +64,11 @@ model ChatHistory {
 
     message       String @db.Text
     response      String @db.Text
-    recipeContext Json? // optional recipe details for context
+    recipeContext Json?
 
     createdAt DateTime @default(now())
 
-    @@index([userId])
-    @@index([createdAt])
+    @@index([userId], name: "idx_chat_history_userId")
+    @@index([createdAt], name: "idx_chat_history_createdAt")
+    @@map("chatHistory")
 }

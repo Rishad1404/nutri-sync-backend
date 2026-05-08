@@ -17,8 +17,9 @@ model MealPlan {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([userId])
-    @@index([status])
+    @@index([userId], name: "idx_meal_plan_userId")
+    @@index([status], name: "idx_meal_plan_status")
+    @@map("mealPlans")
 }
 
 model MealPlanRecipe {
@@ -34,6 +35,7 @@ model MealPlanRecipe {
     mealType String
 
     @@unique([mealPlanId, recipeId, day, mealType])
-    @@index([mealPlanId])
-    @@index([recipeId])
+    @@index([mealPlanId], name: "idx_meal_plan_recipe_meal_planId")
+    @@index([recipeId], name: "idx_meal_plan_recipe_recipeId")
+    @@map("mealPlanRecipes")
 }

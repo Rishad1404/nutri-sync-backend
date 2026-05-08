@@ -16,8 +16,9 @@ model UserNutritionLog {
     updatedAt DateTime @updatedAt
 
     @@unique([userId, date])
-    @@index([userId])
-    @@index([date])
+    @@index([userId], name: "idx_user_nutrition_log_userId")
+    @@index([date], name: "idx_user_nutrition_log_date")
+    @@map("userNutritionLogs")
 }
 
 model AdminLog {
@@ -29,6 +30,7 @@ model AdminLog {
 
     createdAt DateTime @default(now())
 
-    @@index([adminId])
-    @@index([action])
+    @@index([adminId], name: "idx_admin_log_adminId")
+    @@index([action], name: "idx_admin_log_action")
+    @@map("adminLogs")
 }
