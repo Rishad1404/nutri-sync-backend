@@ -6,75 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>
-        <%= appName || "Your App" %> - Your OTP Code
+        <%= appName || "NutriSync" %> - Your OTP Code
     </title>
 </head>
 
-<body style="margin:0; padding:0; background-color:#f3f4f6;">
+<body style="margin:0; padding:0; background-color:#f9fafb;">
+    <!-- Preheader text for email clients -->
     <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent;">
         Your one-time verification code is ready.
     </div>
 
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
-        style="background-color:#f3f4f6; padding:24px 12px;">
+        style="background-color:#f9fafb; padding:40px 12px;">
         <tr>
             <td align="center">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
-                    style="max-width:600px; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+                    style="max-width:600px; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+
+                    <!-- LOGO SECTION -->
+                    <tr>
+                        <td align="center" style="padding:40px 24px 0 24px;">
+                            <img src="<%= logoUrl || 'https://i.ibb.co.com/tPNJMm63/Nutri-Sync-Photoroom.png' %>"
+                                alt="<%= appName || 'NutriSync' %> Logo"
+                                style="max-height:48px; display:block; border:0;" />
+                        </td>
+                    </tr>
+
+                    <!-- MAIN CONTENT -->
                     <tr>
                         <td
-                            style="padding:28px 24px 16px 24px; font-family:Arial, Helvetica, sans-serif; color:#111827;">
-                            <h1 style="margin:0; font-size:22px; line-height:30px; font-weight:700;">Verification Code
+                            style="padding:32px 32px 16px 32px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827;">
+                            <h1 style="margin:0; font-size:24px; line-height:32px; font-weight:700; text-align:center;">
+                                Verification Code
                             </h1>
-                            <p style="margin:14px 0 0; font-size:15px; line-height:24px; color:#374151;">
+                            <p style="margin:24px 0 0; font-size:16px; line-height:24px; color:#4b5563;">
                                 Hi <%= userName || "there" %>,
                             </p>
-                            <p style="margin:10px 0 0; font-size:15px; line-height:24px; color:#374151;">
+                            <p style="margin:12px 0 0; font-size:16px; line-height:24px; color:#4b5563;">
                                 Use the one-time password (OTP) below to verify your identity for <strong>
-                                    <%= appName || "your account" %>
+                                    <%= appName || "NutriSync" %>
                                 </strong>.
                             </p>
                         </td>
                     </tr>
 
+                    <!-- OTP BOX -->
                     <tr>
                         <td align="center"
-                            style="padding:8px 24px 20px 24px; font-family:Arial, Helvetica, sans-serif;">
+                            style="padding:16px 32px 24px 32px; font-family:-apple-system, BlinkMacSystemFont, monospace;">
                             <div
-                                style="display:inline-block; padding:12px 20px; border-radius:10px; border:1px solid #d1d5db; background:#f9fafb; letter-spacing:7px; font-size:28px; line-height:34px; font-weight:700; color:#111827;">
+                                style="display:inline-block; padding:16px 32px; border-radius:8px; border:2px dashed #10b981; background:#ecfdf5; letter-spacing:8px; font-size:32px; line-height:38px; font-weight:700; color:#065f46;">
                                 <%= otp %>
                             </div>
                         </td>
                     </tr>
 
+                    <!-- INSTRUCTIONS -->
                     <tr>
-                        <td style="padding:0 24px 22px 24px; font-family:Arial, Helvetica, sans-serif; color:#4b5563;">
-                            <p style="margin:0; font-size:14px; line-height:22px;">
+                        <td
+                            style="padding:0 32px 32px 32px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#6b7280;">
+                            <p style="margin:0; font-size:15px; line-height:24px;">
                                 This code will expire in <strong>
                                     <%= expiresInMinutes || 2 %> minutes
                                 </strong>.
                             </p>
-                            <p style="margin:10px 0 0; font-size:14px; line-height:22px;">
-                                If you didn’t request this code, please ignore this email and consider changing your
-                                password.
+                            <p style="margin:12px 0 0; font-size:15px; line-height:24px;">
+                                If you didn’t request this code, please ignore this email. Someone else might have typed
+                                your email address by mistake.
                             </p>
                         </td>
                     </tr>
 
+                    <!-- FOOTER -->
                     <tr>
                         <td
-                            style="padding:16px 24px 24px 24px; border-top:1px solid #e5e7eb; font-family:Arial, Helvetica, sans-serif; color:#6b7280;">
-                            <p style="margin:0; font-size:12px; line-height:18px;">
+                            style="padding:24px 32px; background-color:#f9fafb; border-top:1px solid #e5e7eb; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#9ca3af;">
+                            <p style="margin:0; font-size:13px; line-height:20px; text-align:center;">
                                 For security, never share this OTP with anyone.
                             </p>
-                            <p style="margin:6px 0 0; font-size:12px; line-height:18px;">
+                            <p style="margin:8px 0 0; font-size:13px; line-height:20px; text-align:center;">
                                 Need help? Contact
-                                <a href="mailto:<%= supportEmail || " support@example.com" %>" style="color:#2563eb;
-                                    text-decoration:underline;"><%= supportEmail || "support@example.com" %></a>.
+                                <a href="mailto:<%= supportEmail || 'support@nutrisync.com' %>"
+                                    style="color:#10b981; text-decoration:none; font-weight:500;">
+                                    <%= supportEmail || "support@nutrisync.com" %>
+                                </a>.
                             </p>
-                            <p style="margin:6px 0 0; font-size:12px; line-height:18px;">
+                            <p style="margin:8px 0 0; font-size:13px; line-height:20px; text-align:center;">
                                 © <%= year || new Date().getFullYear() %>
-                                    <%= appName || "Your App" %>. All rights reserved.
+                                    <%= appName || "NutriSync" %>. All rights reserved.
                             </p>
                         </td>
                     </tr>
