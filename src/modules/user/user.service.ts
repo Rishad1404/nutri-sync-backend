@@ -69,22 +69,22 @@ const getUserAnalytics = async (userId: string) => {
   const calorieTrend = ChartBuilder.groupByDate(
     logs,
     "createdAt",
-    "calories",
+    "totalCalories",
     "daily",
   );
 
   const macroBreakdown = [
     {
       name: "Protein",
-      value: logs.reduce((sum: number, l: any) => (sum += l.protein), 0),
+      value: logs.reduce((sum: number, l: any) => (sum += l.totalProtein), 0),
     },
     {
       name: "Carbs",
-      value: logs.reduce((sum: number, l: any) => (sum += l.carbs), 0),
+      value: logs.reduce((sum: number, l: any) => (sum += l.totalCarbs), 0),
     },
     {
       name: "Fat",
-      value: logs.reduce((sum: number, l: any) => (sum += l.fat), 0),
+      value: logs.reduce((sum: number, l: any) => (sum += l.totalFat), 0),
     },
   ];
 

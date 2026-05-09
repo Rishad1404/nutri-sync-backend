@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import ejs from "ejs";
 import status from "http-status";
 import nodemailer from "nodemailer";
@@ -15,7 +16,14 @@ const transporter = nodemailer.createTransport({
   port: Number(envVars.EMAIL_SENDER.SMTP_PORT),
 });
 
-transporter.verify().catch(() => null);
+// Verify transporter connection on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("[Email Service] SMTP connection failed:", error);
+  } else {
+    console.log("[Email Service] SMTP connection verified successfully");
+  }
+});
 
 interface SendEmailOptions {
   to: string;
@@ -37,10 +45,17 @@ export const sendEmail = async ({
   attachments,
 }: SendEmailOptions) => {
   try {
-     const templatePath = path.resolve(
+    console.log(
+      `[Email Service] Starting to send email to ${to} with template: ${templateName}`,
+    );
+
+    // Resolve template path
+    const templatePath = path.resolve(
       process.cwd(),
       `src/templates/${templateName}.ejs`,
     );
+
+    console.log(`[Email Service] Template path: ${templatePath}`);
 
     const td = templateData as Record<string, unknown>;
     const expiresVal =
@@ -50,16 +65,27 @@ export const sendEmail = async ({
     const expiresInMinutes = typeof expiresVal === "number" ? expiresVal : 5;
 
     const templateDataWithDefaults: Record<string, unknown> = {
-      appName: envVars.APP_NAME ?? "Your App",
-      supportEmail: envVars.EMAIL_SENDER.SMTP_FROM ?? "support@example.com",
+      appName: envVars.APP_NAME ?? "NutriSync",
+      supportEmail: envVars.EMAIL_SENDER.SMTP_FROM ?? "support@nutrisync.com",
       year: new Date().getFullYear(),
       expiresInMinutes,
+      logoUrl: "https://i.ibb.co.com/tPNJMm63/Nutri-Sync-Photoroom.png",
       ...td,
     };
 
+    console.log(`[Email Service] Template data prepared:`, {
+      appName: templateDataWithDefaults.appName,
+      expiresInMinutes: templateDataWithDefaults.expiresInMinutes,
+      hasOtp: !!templateDataWithDefaults.otp,
+    });
+
+    // Render template with EJS
     const html = await ejs.renderFile(templatePath, templateDataWithDefaults);
 
-    await transporter.sendMail({
+    console.log(`[Email Service] Template rendered successfully`);
+
+    // Send email
+    const result = await transporter.sendMail({
       from: envVars.EMAIL_SENDER.SMTP_FROM,
       to: to,
       subject: subject,
@@ -70,7 +96,47 @@ export const sendEmail = async ({
         contentType: attachment.contentType,
       })),
     });
-  } catch {
-    throw new AppError(status.INTERNAL_SERVER_ERROR, `Failed to send email to ${to}`);
+
+    console.log(`[Email Service] Email sent successfully to ${to}`, {
+      messageId: result.messageId,
+      response: result.response,
+    });
+
+    return result;
+  } catch (error) {
+    console.error(`[Email Service] Error sending email to ${to}:`, error);
+
+    // Provide more detailed error message
+    let errorMessage = `Failed to send email to ${to}`;
+
+    if (error instanceof Error) {
+      errorMessage += `: ${error.message}`;
+      console.error(`[Email Service] Stack trace:`, error.stack);
+    }
+
+    throw new AppError(status.INTERNAL_SERVER_ERROR, errorMessage);
+  }
+};
+
+// Health check function to test email service
+export const testEmailConnection = async () => {
+  try {
+    console.log("[Email Service] Testing SMTP connection...");
+
+    const testResult = await transporter.verify();
+
+    if (testResult) {
+      console.log("[Email Service] SMTP connection test successful ✓");
+      return { success: true, message: "SMTP connection verified" };
+    } else {
+      console.error("[Email Service] SMTP connection test failed");
+      return { success: false, message: "SMTP connection failed" };
+    }
+  } catch (error) {
+    console.error("[Email Service] SMTP connection test error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 };
