@@ -37,6 +37,22 @@ const getAllRecipes = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const toggleFavorite = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const result = await recipeService.toggleFavorite(userId, id as string);
+
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: result.favorited
+      ? "Recipe added to favorites"
+      : "Recipe removed from favorites",
+    data: result,
+  });
+});
+
 // get single recipe by ID
 const getRecipeById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -87,4 +103,5 @@ export const recipeController = {
   getRecipeById,
   updateRecipe,
   deleteRecipe,
+  toggleFavorite,
 };

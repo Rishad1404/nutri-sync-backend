@@ -16,6 +16,12 @@ router.post(
   recipeController.createRecipe,
 );
 
+router.post(
+  "/:id/favorite",
+  authorize(Role.USER, Role.ADMIN),
+  recipeController.toggleFavorite,
+);
+
 router.patch(
   "/:id",
   authorize(Role.ADMIN, Role.USER),

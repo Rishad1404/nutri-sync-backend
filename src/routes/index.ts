@@ -7,6 +7,7 @@ import { chatRoutes } from "../modules/chat/chat.route";
 import { aiRoutes } from "../modules/ai/ai.route";
 import { adminRoutes } from "../modules/admin/admin.route";
 import { userRoutes } from "../modules/user/user.route";
+import { ingredientRoutes } from "../modules/ingredient/ingredient.route";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/recipes", recipeRoutes);
 router.use("/meal-plans", mealPlanRoutes);
 router.use("/chat", chatRoutes);
 router.use("/ai", aiRoutes);
+router.use("/ingredients", ingredientRoutes);
 
 export const apiRoutes = router;

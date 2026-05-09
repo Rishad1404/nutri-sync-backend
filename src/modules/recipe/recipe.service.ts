@@ -11,10 +11,8 @@ import type {
   UpdateRecipeInput,
 } from "./recipe.type";
 import cache from "../../shared/utils/cache";
+import { Recipe } from "../../generated/prisma";
 
-/**
- * Helper to check if a user is blocked
- */
 const validateUserStatus = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -29,9 +27,17 @@ const validateUserStatus = async (userId: string) => {
   }
 };
 
-/**
- * @description Create a new recipe
- */
+// 1. Define the exact shape of your return object
+export interface IPaginatedRecipeResponse {
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  data: Recipe[];
+}
+
 const createRecipe = async (user: IRequestUser, payload: CreateRecipeInput) => {
   // 1. Check if user is blocked before allowing post
   await validateUserStatus(user.id);
@@ -54,13 +60,14 @@ const createRecipe = async (user: IRequestUser, payload: CreateRecipeInput) => {
   return recipe;
 };
 
-/**
- * @description Get all recipes (Viewing is allowed for blocked users)
- */
-const getAllRecipes = async (query: RecipeFilters) => {
+const getAllRecipes = async (
+  query: RecipeFilters,
+): Promise<IPaginatedRecipeResponse> => {
   const cacheKey = `recipes:${JSON.stringify(query)}`;
   const cachedData = cache.get(cacheKey);
-  if (cachedData) return cachedData;
+
+  // Cast the cached data
+  if (cachedData) return cachedData as IPaginatedRecipeResponse;
 
   const builder = new PrismaQueryBuilder(query)
     .search(["title", "description", "cuisine"])
@@ -82,18 +89,16 @@ const getAllRecipes = async (query: RecipeFilters) => {
   const limit = Number(query.limit) || 10;
   const totalPages = Math.ceil(total / limit);
 
-  const result = {
+  // Apply the interface here
+  const result: IPaginatedRecipeResponse = {
     meta: { total, page, limit, totalPages },
-    data: recipes,
+    data: recipes as any,
   };
 
   cache.set(cacheKey, result);
   return result;
 };
 
-/**
- * @description Get a single recipe (Viewing is allowed for blocked users)
- */
 const getRecipeById = async (id: string) => {
   const recipe = await prisma.recipe.findUnique({
     where: { id },
@@ -119,9 +124,6 @@ const getRecipeById = async (id: string) => {
   return recipe;
 };
 
-/**
- * @description Update a recipe (Creator or Admin only + Blocked check)
- */
 const updateRecipe = async (
   id: string,
   user: IRequestUser,
@@ -156,9 +158,6 @@ const updateRecipe = async (
   return updatedRecipe;
 };
 
-/**
- * @description Delete a recipe (Creator or Admin only + Blocked check)
- */
 const deleteRecipe = async (id: string, user: IRequestUser) => {
   // 1. Check if user is blocked
   await validateUserStatus(user.id);
@@ -190,10 +189,31 @@ const deleteRecipe = async (id: string, user: IRequestUser) => {
   return null;
 };
 
+const toggleFavorite = async (userId: string, recipeId: string) => {
+  const existingFavorite = await prisma.favorite.findUnique({
+    where: {
+      userId_recipeId: { userId, recipeId },
+    },
+  });
+
+  if (existingFavorite) {
+    await prisma.favorite.delete({
+      where: { userId_recipeId: { userId, recipeId } },
+    });
+    return { favorited: false };
+  }
+
+  await prisma.favorite.create({
+    data: { userId, recipeId },
+  });
+  return { favorited: true };
+};
+
 export const recipeService = {
   createRecipe,
   getAllRecipes,
   getRecipeById,
   updateRecipe,
   deleteRecipe,
+  toggleFavorite,
 };
