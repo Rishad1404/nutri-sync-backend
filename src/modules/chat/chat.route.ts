@@ -1,6 +1,9 @@
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma";
 import { Router } from "express";
-import { authorize, optionalAuthenticate } from "../../shared/middlewares/authorize.middleware";
+import {
+  authorize,
+  optionalAuthenticate,
+} from "../../shared/middlewares/authorize.middleware";
 import { chatController } from "./chat.controller";
 import { aiLimiter, guestAiLimiter } from "../../config/rate-limit";
 
@@ -17,20 +20,20 @@ router.post(
     }
     return guestAiLimiter(req, res, next);
   },
-  chatController.sendMessage
+  chatController.sendMessage,
 );
 
 // History route: Strictly for logged-in users
 router.get(
   "/history",
   authorize(Role.USER, Role.ADMIN),
-  chatController.getHistory
+  chatController.getHistory,
 );
 
 router.delete(
   "/history",
   authorize(Role.USER, Role.ADMIN),
-  chatController.clearHistory
+  chatController.clearHistory,
 );
 
 export const chatRoutes = router;

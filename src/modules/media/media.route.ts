@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma";
 
 import { Router } from "express";
 import { authorize } from "../../shared/middlewares/authorize.middleware";

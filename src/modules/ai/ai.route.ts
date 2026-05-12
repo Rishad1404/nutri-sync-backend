@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { aiController } from "./ai.controller";
 import { authorize } from "../../shared/middlewares/authorize.middleware";
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma";
 import { aiLimiter } from "../../config/rate-limit";
 
 const router = Router();

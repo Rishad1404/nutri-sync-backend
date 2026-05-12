@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Role, UserStatus } from "@prisma/client";
 import { prisma } from "../../database/prisma";
 import { AppError } from "../../shared/errors/app-error";
 import status from "http-status";
 import { ChartBuilder } from "../../shared/utils/chart-builder";
+import { Role, UserStatus } from "../../generated/prisma";
 
 // --- User Management ---
 const getAllUsers = async () => {

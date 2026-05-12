@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { adminController } from "./admin.controller";
 import { authorize } from "../../shared/middlewares/authorize.middleware";
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma";
 
 const router = Router();
 // STICKY RULE: Only ADMINS can enter this entire module

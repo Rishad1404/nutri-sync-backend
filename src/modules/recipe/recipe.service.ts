@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserStatus } from "@prisma/client";
 import status from "http-status";
 import { prisma } from "../../database/prisma";
 import { AppError } from "../../shared/errors/app-error";
@@ -11,7 +10,7 @@ import type {
   UpdateRecipeInput,
 } from "./recipe.type";
 import cache from "../../shared/utils/cache";
-import { Recipe } from "../../generated/prisma";
+import { Recipe, UserStatus } from "../../generated/prisma";
 
 const validateUserStatus = async (userId: string) => {
   const user = await prisma.user.findUnique({
