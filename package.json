@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "prebuild": "prisma generate",
-    "build": "tsc",
+    "build": "prisma generate && tsc && node scripts/fix-imports.js",
     "lint": "eslint ./src/**/*",
     "lint:fix": "eslint ./src/**/* --fix",
     "start": "node dist/server.js",
