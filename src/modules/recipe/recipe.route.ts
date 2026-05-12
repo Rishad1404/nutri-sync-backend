@@ -7,9 +7,16 @@ const router = Router();
 
 // Public routes
 router.get("/", recipeController.getAllRecipes);
-router.get("/:id", recipeController.getRecipeById);
 
 // Protected routes
+router.get(
+  "/my-favorites",
+  authorize(Role.USER, Role.ADMIN),
+  recipeController.getMyFavorites,
+);
+
+router.get("/:id", recipeController.getRecipeById);
+
 router.post(
   "/",
   authorize(Role.ADMIN, Role.USER),

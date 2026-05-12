@@ -10,6 +10,8 @@ router.use(authorize(Role.USER, Role.ADMIN));
 router.get("/me", userController.getProfile);
 router.get("/stats", userController.getMyStats);
 router.patch("/profile", userController.updateMyProfile);
+router.post("/profile", userController.updateMyProfile);
 router.get("/analytics", userController.getMyAnalytics);
+router.patch("/health-profile", userController.updateHealthProfile);
 
 export const userRoutes = router;

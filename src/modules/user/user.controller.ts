@@ -44,9 +44,20 @@ const getMyAnalytics = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateHealthProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.updateHealthProfile(req.user.id, req.body);
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "Health profile updated successfully",
+    data: result,
+  });
+});
+
 export const userController = {
   getMyStats,
   getProfile,
   updateMyProfile,
   getMyAnalytics,
+  updateHealthProfile,
 };

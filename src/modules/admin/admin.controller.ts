@@ -73,6 +73,17 @@ const getSystemAnalytics = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.updateUser(id as string, req.body);
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "User details updated successfully",
+    data: result,
+  });
+});
+
 export const adminController = {
   getUsers,
   getStats,
@@ -80,4 +91,5 @@ export const adminController = {
   changeUserRole,
   removeUser,
   getSystemAnalytics,
+  updateUser,
 };

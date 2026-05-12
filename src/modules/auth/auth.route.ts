@@ -24,5 +24,10 @@ router.patch(
   authorize(Role.ADMIN, Role.USER),
   authController.updateProfile,
 );
+router.post(
+  "/profile",
+  authorize(Role.ADMIN, Role.USER),
+  authController.updateProfile,
+);
 
 export const authRoutes = router;

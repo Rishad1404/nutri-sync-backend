@@ -49,6 +49,29 @@ const updateProfile = async (userId: string, payload: any) => {
   });
 };
 
+const updateHealthProfile = async (userId: string, payload: any) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError(status.NOT_FOUND, "User not found");
+
+  const { age, gender, weight, height, activityLevel, goals, dietaryPreferences, allergies } = payload;
+
+  // Simple calorie target calculation logic (optional but helpful)
+  // For now, we just update the fields
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      age: age ? Number(age) : undefined,
+      gender,
+      weight: weight ? Number(weight) : undefined,
+      height: height ? Number(height) : undefined,
+      activityLevel,
+      goals,
+      dietaryPreferences,
+      allergies,
+    },
+  });
+};
+
 const getMe = async (userId: string) => {
   return await prisma.user.findUnique({
     where: { id: userId },
@@ -94,6 +117,7 @@ const getUserAnalytics = async (userId: string) => {
 export const userService = {
   getUserStats,
   updateProfile,
+  updateHealthProfile,
   getMe,
   getUserAnalytics,
 };

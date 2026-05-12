@@ -97,6 +97,18 @@ const deleteRecipe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyFavorites = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await recipeService.getMyFavorites(userId);
+
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "Favorite recipes fetched successfully",
+    data: result,
+  });
+});
+
 export const recipeController = {
   createRecipe,
   getAllRecipes,
@@ -104,4 +116,5 @@ export const recipeController = {
   updateRecipe,
   deleteRecipe,
   toggleFavorite,
+  getMyFavorites,
 };

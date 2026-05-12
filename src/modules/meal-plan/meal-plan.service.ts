@@ -67,9 +67,25 @@ const getMyMealPlans = async (
     .sort()
     .paginate()
     .include({
+      recipes: {
+        include: {
+          recipe: {
+            select: {
+              id: true,
+              title: true,
+              imageUrl: true,
+              nutrition: true,
+              cookTime: true,
+              prepTime: true,
+            },
+          },
+        },
+      },
       _count: { select: { recipes: true } },
     });
 
+  console.log("Current User ID:", user.id);
+  console.log("Prisma Query:", JSON.stringify(builder.build(), null, 2));
   const [mealPlans, total] = await Promise.all([
     prisma.mealPlan.findMany(builder.build()),
     prisma.mealPlan.count(builder.buildCount()),

@@ -8,6 +8,9 @@ const router = Router();
 
 router.use(aiLimiter);
 
+// Public route for guest users (with strict rate limit)
+router.post("/public-analyze-nutrition", aiController.analyzeNutrition);
+
 // Protect these routes so random bots can't drain your Gemini quota
 router.use(authorize(Role.USER, Role.ADMIN));
 

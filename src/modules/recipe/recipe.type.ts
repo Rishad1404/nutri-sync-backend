@@ -31,8 +31,8 @@ export const createRecipeSchema = z.object({
     servings: z.number().int().positive("Servings must be at least 1"),
     difficulty: z.enum(["easy", "medium", "hard"]),
     cuisine: z.string().min(1, "Cuisine type is required"),
-    category: z.enum(["breakfast", "lunch", "dinner", "snack"]),
-    imageUrl: z.string().url("Invalid image URL").optional(),
+    category: z.enum(["breakfast", "lunch", "dinner", "snack", "dessert"]),
+    imageUrl: z.string().optional(),
 
     ingredients: z
       .array(ingredientSchema)
@@ -54,8 +54,15 @@ export const recipeQuerySchema = z.object({
     limit: z.string().optional().default("10"),
     search: z.string().optional(),
     cuisine: z.string().optional(),
-    difficulty: z.enum(["easy", "medium", "hard"]).optional(),
-    category: z.enum(["breakfast", "lunch", "dinner", "snack"]).optional(),
+    difficulty: z
+      .string()
+      .optional()
+      .transform((val) => val?.toLowerCase()),
+    category: z
+      .string()
+      .optional()
+      .transform((val) => val?.toLowerCase()),
+    createdById: z.string().optional(),
     sortBy: z
       .enum(["createdAt", "rating", "cookTime", "viewCount"])
       .optional()

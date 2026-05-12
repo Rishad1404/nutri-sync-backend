@@ -21,6 +21,13 @@ model User {
     allergies          String[] @default([])
     goals              String?
     calorieTarget      Int      @default(2000)
+    
+    // Health Profile
+    age           Int?
+    gender        String?
+    weight        Float?
+    height        Float?
+    activityLevel String?
 
     recipes      Recipe[]
     mealPlans    MealPlan[]

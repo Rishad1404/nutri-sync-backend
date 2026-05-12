@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Role, UserStatus } from "@prisma/client";
 import { prisma } from "../../database/prisma";
 import { AppError } from "../../shared/errors/app-error";
@@ -7,6 +8,7 @@ import { ChartBuilder } from "../../shared/utils/chart-builder";
 // --- User Management ---
 const getAllUsers = async () => {
   return await prisma.user.findMany({
+    where: { isDeleted: false },
     orderBy: { createdAt: "desc" },
   });
 };
@@ -32,6 +34,17 @@ const updateUserRole = async (userId: string, newRole: Role) => {
   return await prisma.user.update({
     where: { id: userId },
     data: { role: newRole },
+  });
+};
+
+const updateUser = async (userId: string, data: any) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      email: data.email,
+      calorieTarget: data.calorieTarget,
+    },
   });
 };
 
@@ -79,21 +92,17 @@ const deleteUser = async (userId: string) => {
 };
 
 const getAdminAnalytics = async () => {
-  const [users, recipes] = await Promise.all([
+  const [users, recipes, logs] = await Promise.all([
     prisma.user.findMany({ select: { createdAt: true } }),
     prisma.recipe.findMany({ select: { cuisine: true } }),
+    prisma.userNutritionLog.findMany({ select: { createdAt: true } }),
   ]);
 
-  const userGrowth = ChartBuilder.groupByDate(
-    users,
-    "createdAt",
-    "id",
-    "monthly",
-  );
-
+  const userGrowth = ChartBuilder.countByDate(users, "createdAt", "monthly");
   const cuisineDistribution = ChartBuilder.getDistribution(recipes, "cuisine");
+  const systemEngagement = ChartBuilder.countByDate(logs, "createdAt", "daily");
 
-  return { userGrowth, cuisineDistribution };
+  return { userGrowth, cuisineDistribution, systemEngagement };
 };
 
 export const adminService = {
@@ -104,4 +113,5 @@ export const adminService = {
   getPlatformStats,
   deleteUser,
   getAdminAnalytics,
+  updateUser,
 };

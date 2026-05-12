@@ -28,7 +28,7 @@ STRICT BOUNDARIES & SAFETY:
 `;
 
 const processMessage = async (
-  user: IRequestUser,
+  user: IRequestUser | undefined,
   payload: ChatMessageInput,
 ) => {
   // 1. Select the model and inject the professional system instruction
@@ -48,22 +48,39 @@ const processMessage = async (
   const result = await model.generateContent(promptText);
   const aiResponse = result.response.text();
 
-  // 4. Save the interaction to the database
-  const chatRecord = await prisma.chatHistory.create({
-    data: {
-      userId: user.id,
+  // 4. Save the interaction to the database ONLY for logged-in users
+  let chatRecord = null;
+  if (user?.id) {
+    chatRecord = await prisma.chatHistory.create({
+      data: {
+        userId: user.id,
+        message: payload.message,
+        response: aiResponse,
+        recipeContext: payload.recipeContext
+          ? (payload.recipeContext as any)
+          : undefined,
+      },
+    });
+  } else {
+    // For guests, return a simulated record
+    chatRecord = {
+      id: "guest-" + Date.now(),
       message: payload.message,
       response: aiResponse,
-      recipeContext: payload.recipeContext
-        ? (payload.recipeContext as any)
-        : undefined,
-    },
-  });
+      recipeContext: payload.recipeContext,
+      createdAt: new Date(),
+    };
+  }
 
   return chatRecord;
 };
 
 const getMyChatHistory = async (user: IRequestUser) => {
+  if (!user?.id) {
+    console.error("Attempted to fetch chat history without a valid user ID");
+    return [];
+  }
+
   // Fetch the user's past chats, newest first
   const history = await prisma.chatHistory.findMany({
     where: { userId: user.id },
@@ -75,7 +92,14 @@ const getMyChatHistory = async (user: IRequestUser) => {
   return history.reverse();
 };
 
+const clearMyChatHistory = async (user: IRequestUser) => {
+  return await prisma.chatHistory.deleteMany({
+    where: { userId: user.id },
+  });
+};
+
 export const chatService = {
   processMessage,
   getMyChatHistory,
+  clearMyChatHistory,
 };

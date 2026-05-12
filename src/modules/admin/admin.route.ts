@@ -11,6 +11,7 @@ router.get("/users", adminController.getUsers);
 router.get("/stats", adminController.getStats);
 router.patch("/users/:id/status", adminController.changeUserStatus);
 router.patch("/users/:id/role", adminController.changeUserRole);
+router.patch("/users/:id", adminController.updateUser);
 router.delete("/users/:id", adminController.removeUser);
 router.get("/analytics", adminController.getSystemAnalytics);
 

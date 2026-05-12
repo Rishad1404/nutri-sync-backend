@@ -32,7 +32,19 @@ const getHistory = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const clearHistory = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IRequestUser;
+  await chatService.clearMyChatHistory(user);
+
+  sendResponse(res, {
+    status: status.OK,
+    success: true,
+    message: "Chat history cleared successfully",
+  });
+});
+
 export const chatController = {
   sendMessage,
   getHistory,
+  clearHistory,
 };
