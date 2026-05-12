@@ -56,3 +56,4 @@ app.use(notFound);
 app.use(globalErrorHandler);
 
 export { app };
+export default app;
