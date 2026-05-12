@@ -6,7 +6,7 @@ import { AppError } from "../errors/app-error";
 import { cookieUtils } from "../utils/cookie";
 import { jwtUtils } from "../utils/jwt";
 import { prisma } from "../../database/prisma";
-import { Role, UserStatus } from "../../generated/prisma/enums";
+import { Role, UserStatus } from "@prisma/client";
 
 export const authorize =
   (...authRoles: Role[]) =>

@@ -1,4 +1,4 @@
-import { Role } from "../../generated/prisma/enums";
+import { Role } from "@prisma/client";
 import { Router } from "express";
 import { authorize } from "../../shared/middlewares/authorize.middleware";
 import { mealPlanController } from "./meal-plan.controller";
