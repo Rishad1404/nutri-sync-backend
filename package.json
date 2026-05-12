@@ -2,10 +2,10 @@
   "name": "nutri-sync-backend",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && node scripts/fix-imports.js",
     "lint": "eslint ./src/**/*",
     "lint:fix": "eslint ./src/**/* --fix",
     "start": "node dist/server.js",

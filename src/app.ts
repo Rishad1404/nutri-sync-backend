@@ -2,13 +2,13 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, Response } from "express";
 import helmet from "helmet";
 import qs from "qs";
-import { cors } from "./config/cors";
-import { logger } from "./config/logger";
-import { limiter } from "./config/rate-limit";
-import { apiRoutes } from "./routes";
+import { cors } from "./config/cors.js";
+import { logger } from "./config/logger.js";
+import { limiter } from "./config/rate-limit.js";
+import { apiRoutes } from "./routes/index.js";
 import { globalErrorHandler } from "./shared/middlewares/error.middleware";
 import { notFound } from "./shared/middlewares/not-found.middleware";
-import { auth } from "./lib/auth";
+import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 import path from "path";
 
