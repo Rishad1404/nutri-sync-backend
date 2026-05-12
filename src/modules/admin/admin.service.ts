@@ -3,7 +3,7 @@ import { prisma } from "../../database/prisma";
 import { AppError } from "../../shared/errors/app-error";
 import status from "http-status";
 import { ChartBuilder } from "../../shared/utils/chart-builder";
-import { Role, UserStatus } from "../../generated/prisma";
+import { Role, UserStatus } from "../../generated/prisma/enums";
 
 // --- User Management ---
 const getAllUsers = async () => {

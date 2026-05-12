@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authorize } from "../../shared/middlewares/authorize.middleware";
-import { Role } from "../../generated/prisma";
+import { Role } from "../../generated/prisma/enums";
 import { nutritionController } from "./nutrition.controller";
 
 const router = Router();

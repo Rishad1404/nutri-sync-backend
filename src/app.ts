@@ -26,13 +26,21 @@ app.use(helmet());
 app.use(logger);
 app.use(cors);
 app.use(limiter);
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // trust proxy when behind proxies (load balancers)
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
+
+// API routes
+app.use("/api/auth", (req, res) => {
+  return toNodeHandler(auth)(req, res);
+});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use("/api/v1", apiRoutes);
 
 // Home page route
 app.get("/", (_req: Request, res: Response) => {
@@ -42,12 +50,6 @@ app.get("/", (_req: Request, res: Response) => {
     version: "1.0.0",
   });
 });
-
-// API routes
-app.use("/api/auth", (req, res) => {
-  return toNodeHandler(auth)(req, res);
-});
-app.use("/api/v1", apiRoutes);
 
 // unhandled routes
 app.use(notFound);
