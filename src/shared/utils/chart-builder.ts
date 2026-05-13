@@ -3,6 +3,7 @@ type ChartItem = { [key: string]: any };
 
 /**
  * Groups raw database records by a specific date field
+ * Returns data in { name, value } format for frontend charts
  */
 const groupByDate = (
   data: ChartItem[],
@@ -23,7 +24,7 @@ const groupByDate = (
 
   return Object.entries(grouped)
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, count]) => ({ date, count }));
+    .map(([name, value]) => ({ name, value }));
 };
 
 /**
@@ -36,7 +37,7 @@ const getDistribution = (data: ChartItem[], categoryField: string) => {
     return acc;
   }, {});
 
-  return Object.entries(counts).map(([label, count]) => ({ label, count }));
+  return Object.entries(counts).map(([name, value]) => ({ name, value }));
 };
 
 /**
@@ -60,7 +61,7 @@ const countByDate = (
 
   return Object.entries(grouped)
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, count]) => ({ date, count }));
+    .map(([name, value]) => ({ name, value }));
 };
 
 export const ChartBuilder = {

@@ -207,12 +207,18 @@ export const auth = betterAuth({
   },
   advanced: {
     useSecureCookies: envVars.NODE_ENV === "production",
+    defaultCookieAttributes: {
+      sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
+      secure: envVars.NODE_ENV === "production",
+      httpOnly: true,
+    },
     cookies: {
       state: {
         attributes: {
           sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
           secure: envVars.NODE_ENV === "production",
           httpOnly: true,
+          partitioned: true,
           path: "/",
         },
       },

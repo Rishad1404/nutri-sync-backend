@@ -13,10 +13,9 @@ export const authorize =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //Session Token Verification
-      let sessionToken = cookieUtils.getCookie(
-        req,
-        "better-auth.session_token",
-      );
+      let sessionToken =
+        cookieUtils.getCookie(req, "better-auth.session_token") ||
+        cookieUtils.getCookie(req, "__Secure-better-auth.session_token");
 
       // Fallback to Authorization header if cookie is missing
       if (!sessionToken && req.headers.authorization) {
@@ -169,7 +168,9 @@ export const optionalAuthenticate = async (
   next: NextFunction,
 ) => {
   try {
-    let sessionToken = cookieUtils.getCookie(req, "better-auth.session_token");
+    let sessionToken =
+      cookieUtils.getCookie(req, "better-auth.session_token") ||
+      cookieUtils.getCookie(req, "__Secure-better-auth.session_token");
     if (!sessionToken && req.headers.authorization) {
       const authHeader = req.headers.authorization;
       if (authHeader.startsWith("Bearer ")) {

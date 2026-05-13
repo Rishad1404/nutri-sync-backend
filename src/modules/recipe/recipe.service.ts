@@ -10,8 +10,7 @@ import type {
   UpdateRecipeInput,
 } from "./recipe.type";
 import cache from "../../shared/utils/cache";
-import { UserStatus } from "@prisma/client";
-import { Recipe } from "../../generated/prisma";
+import { UserStatus, Recipe } from "@prisma/client";
 
 const validateUserStatus = async (userId: string) => {
   const user = await prisma.user.findUnique({
