@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.ibb.co.com/8L8hH0QY/nutri-sync-logo.png" alt="NutriSync Logo" width="120" />
+  <img src="[https://i.ibb.co.com/8L8hH0QY/nutri-sync-logo.png](https://i.ibb.co.com/9kGVF8qv/logo.png)" alt="NutriSync Logo" width="120" />
 </p>
 
 <h1 align="center">NutriSync 🥗</h1>
